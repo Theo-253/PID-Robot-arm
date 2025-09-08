@@ -16,4 +16,13 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+  public final class armConstants {
+    public static final int kArmCanId = 1;
+    public static final double kArmP = 0.0;
+    public static final double kArmI = 0.0;
+    public static final double kArmD = 0.0;
+    public static final int kOutputLimit = 30;
+  }
 }
+
+
