@@ -5,11 +5,19 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.States.armPos;
 //import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.arm;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -20,14 +28,21 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final arm m_arm = arm.getInstance();
+  private final arm m_arm;
+  
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private static final XboxController m_driverController = new XboxController(Constants.OperatorConstants.kDriverControllerPort);
 
+      public static final Trigger driver_A = new JoystickButton(m_driverController, 1);
+      public static final Trigger driver_B = new JoystickButton(m_driverController, 2);
+      public static final Trigger driver_X = new JoystickButton(m_driverController, 3);
+      public static final Trigger driver_Y = new JoystickButton(m_driverController, 4);
+      public static final Trigger driver_LB = new JoystickButton(m_driverController, 5);
+      public static final Trigger driver_RB = new JoystickButton(m_driverController, 6);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    m_arm = arm.getInstance();
     // Configure the trigger bindings
     configureBindings();
   }
@@ -43,13 +58,21 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_arm::exampleCondition)
-        .onTrue(new ExampleCommand(m_arm));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.b().whileTrue(m_arm.spin());
-    m_driverController.x().whileTrue(m_arm.stopSpin());
+    driver_A.onTrue(
+      new RunCommand(() -> m_arm.setArmPos(armPos.acute), m_arm));
+    driver_B.onTrue(
+      new RunCommand(() -> m_arm.setArmPos(armPos.right), m_arm));
+    driver_X.onTrue(
+        new RunCommand(() -> m_arm.setArmPos(armPos.obtuse), m_arm));
+    driver_Y.onTrue(
+      new RunCommand(() -> m_arm.setArmPos(armPos.striaght), m_arm));
+    driver_LB.onTrue(
+        new RunCommand(() -> m_arm.setArmPos(armPos.fullRot), m_arm));
+    driver_RB.onTrue(
+      new RunCommand(() -> m_arm.stop(), m_arm));
   }
 
   /**

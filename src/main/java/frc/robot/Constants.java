@@ -18,10 +18,14 @@ public final class Constants {
   }
   public final class armConstants {
     public static final int kArmCanId = 1;
-    public static final double kArmP = 0.0;
-    public static final double kArmI = 0.0;
-    public static final double kArmD = 0.0;
+    public static final double kP = 0.0;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+    public static final double kFF = 0.0;
     public static final int kOutputLimit = 30;
+    public static final double kMinOutput = -0.25;
+    public static final double kMaxOutput = 0.25;
+
   }
 }
 

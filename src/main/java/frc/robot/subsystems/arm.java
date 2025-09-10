@@ -7,14 +7,22 @@ package frc.robot.subsystems;
 import java.text.DecimalFormat;
 
 import frc.robot.Configs;
+import frc.robot.Constants;
 import frc.robot.Constants.armConstants;
+import frc.robot.States;
+import frc.robot.States.armPos;
 
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,8 +31,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class arm extends SubsystemBase {
   public final SparkMax masterSparkMax;
   private final RelativeEncoder m_masterEncoder;
-  //private SparkClosedLoopController pidController;
-  
+  private SparkClosedLoopController pidController;
+  private int requestedState;
 private static class armHandler {
   private static final arm instance = new arm();
 }
@@ -38,11 +46,35 @@ public static arm getInstance() {
     m_masterEncoder = masterSparkMax.getEncoder();
     masterSparkMax.configure(Configs.arm.armMasterConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
+    
+    pidController = masterSparkMax.getClosedLoopController();
   }
 
   public void setPercentageOpenLoop(double value) {
     SmartDashboard.putNumber("Intake Running Speed", value);
     masterSparkMax.set(value);
+}
+
+public void setArmPos(States.armPos state) {
+requestedState = state.val;
+switch (state) {
+  case acute:
+    pidController.setReference(45.0, ControlType.kPosition);
+    break;
+  case right:
+    pidController.setReference(90.0, ControlType.kPosition);
+    break;
+  case obtuse:
+    pidController.setReference(120.0, ControlType.kPosition);
+  case striaght:
+    pidController.setReference(180, ControlType.kPosition);
+    break;
+  case fullRot:
+    pidController.setReference(360, ControlType.kPosition);
+    break;
+  default:
+    break;
+}
 }
 
 public void stop(){
