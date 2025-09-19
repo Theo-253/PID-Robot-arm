@@ -59,7 +59,7 @@ public void stop(){
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
         () -> {
-          setPercentageOpenLoop(0.1);
+          setPercentageOpenLoop(-0.1);
         });
   }
 
